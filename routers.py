@@ -2,6 +2,7 @@ from typing import Annotated
 from fastapi import Form, APIRouter, Query
 
 from schemas.hotels import Hotel, UpdateHotel
+from dependencies import PaginationDep
 
 
 router = APIRouter(
@@ -26,9 +27,9 @@ hotels = [
     summary="Получить список всех отелей",
     description="<h1>Получить список всех отелей с их id, названиями и городами</h1>",
 )
-async def get_hotels(page: int | None = Query(1, gt=0), per_page: int | None = Query(3, lt=30)):
-    start = (page - 1) * per_page
-    return hotels[start:start + per_page]
+async def get_hotels(pagination: PaginationDep):
+    start = (pagination.page - 1) * pagination.per_page
+    return hotels[start:start + pagination.per_page]
 
 
 @router.get(
