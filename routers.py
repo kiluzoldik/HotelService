@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import Form, APIRouter
+from fastapi import Form, APIRouter, Query
 
 from schemas.hotels import Hotel, UpdateHotel
 
@@ -26,11 +26,9 @@ hotels = [
     summary="Получить список всех отелей",
     description="<h1>Получить список всех отелей с их id, названиями и городами</h1>",
 )
-async def get_hotels(page: int | None = 1, per_page: int | None = 3):
-    if page > 1:
-        start = (page - 1) * per_page
-        return hotels[start:start + per_page]
-    return hotels
+async def get_hotels(page: int | None = Query(1, gt=0), per_page: int | None = Query(3, lt=30)):
+    start = (page - 1) * per_page
+    return hotels[start:start + per_page]
 
 
 @router.get(
