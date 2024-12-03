@@ -7,6 +7,7 @@ from app.models.hotels import Hotels
 from app.schemas.hotels import Hotel, UpdateHotel, ResponseHotel
 from app.api.dependencies import PaginationDep
 from app.database import async_session_maker
+from app.repositories.hotels import HotelsRepository
 
 
 router = APIRouter(
@@ -26,28 +27,14 @@ async def get_hotels(
     title: str | None = Query(None, description="Название отеля"),
     location: str | None = Query(None, description="Город отеля"),
 ):
+    per_page = pagination.per_page
     async with async_session_maker() as session:
-        per_page = pagination.per_page
-        query = select(Hotels)
-        if title:
-            query = query.where(
-                func.lower(Hotels.title)
-                .ilike(f'%{title.lower()}%')
-            )
-        if location:
-            query = query.where(
-                func.lower(Hotels.location)
-                .ilike(f'%{location.lower()}%')
-            )
-            
-        query = (
-            query
-            .limit(per_page)
-            .offset((pagination.page - 1) * per_page)
+        return await HotelsRepository(session).get_all(
+            title=title,
+            location=location,
+            limit=per_page,
+            offset=(pagination.page - 1) * per_page,
         )
-            
-        result = await session.execute(query)
-        return result.scalars().all()
 
 
 @router.post(
