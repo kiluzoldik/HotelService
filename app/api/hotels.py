@@ -8,6 +8,7 @@ from app.schemas.hotels import Hotel, UpdateHotel, ResponseHotel
 from app.api.dependencies import PaginationDep
 from app.database import async_session_maker
 from app.repositories.hotels import HotelsRepository
+from app.repositories.base import BaseRepository
 
 
 router = APIRouter(
@@ -65,8 +66,12 @@ async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
     description="<h1>Удалить отель по его ID</h1>",
 )
 async def delete_hotel(hotel_id: int):
-    global hotels
-    hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
+    async with async_session_maker() as session:
+        await HotelsRepository(session).delete(
+            hotel_id,
+            message="Отель не найден"
+        )
+        
     return {"message": "Отель успешно удален"}
 
 
@@ -76,25 +81,29 @@ async def delete_hotel(hotel_id: int):
     description="<h1>Изменить отель полностью по его ID с его новыми названием и городом</h1>",
 )
 async def full_update_hotel(hotel_id: int, hotel_data: UpdateHotel):
-    for hotel in hotels:
-        if hotel["id"] == hotel_id:
-            hotel["title"] = hotel_data.title
-            hotel["name"] = hotel_data.name
-            return {"message": "Отель успешно изменен"}
-    return {"message": "Отель не найден"}
+    async with async_session_maker() as session:
+        hotel = await HotelsRepository(session).edit(
+            hotel_id,
+            hotel_data,
+            message="Отель не найден",
+        )
+        await session.commit()
+        await session.refresh(hotel)
+    
+    return {"message": "Отель успешно изменен"}
 
 
-@router.patch(
-    "/{hotel_id}", 
-    summary="Изменить отель частично по ID",
-    description="<h1>Изменить отель частично по его ID с его новыми названием и/или городом</h1>",
-)
-async def partial_update_hotel(hotel_id: int, hotel_data: UpdateHotel):
-    for hotel in hotels:
-        if hotel["id"] == hotel_id:
-            if hotel_data.title:
-                hotel["title"] = hotel_data.title
-            if hotel_data.name:
-                hotel["name"] = hotel_data.name
-            return {"message": "Отель успешно изменен"}
-    return {"message": "Отель не найден"}
+# @router.patch(
+#     "/{hotel_id}", 
+#     summary="Изменить отель частично по ID",
+#     description="<h1>Изменить отель частично по его ID с его новыми названием и/или городом</h1>",
+# )
+# async def partial_update_hotel(hotel_id: int, hotel_data: UpdateHotel):
+#     for hotel in hotels:
+#         if hotel["id"] == hotel_id:
+#             if hotel_data.title:
+#                 hotel["title"] = hotel_data.title
+#             if hotel_data.name:
+#                 hotel["name"] = hotel_data.name
+#             return {"message": "Отель успешно изменен"}
+#     return {"message": "Отель не найден"}
