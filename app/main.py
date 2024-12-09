@@ -7,12 +7,14 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from app.api.hotels import router as router_hotels
+from app.api.auth import router as auth_router
 
 
 app = FastAPI()
 
 
 app.include_router(router_hotels)
+app.include_router(auth_router)
 
 
 if __name__ == "__main__":

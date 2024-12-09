@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Query
 
-from app.schemas.hotels import Hotel, UpdateHotel, ResponseHotel
+from app.schemas.hotels import HotelAdd, UpdateHotel, ResponseHotel
 from app.api.dependencies import PaginationDep
 from app.database import async_session_maker
 from app.repositories.hotels import HotelsRepository
@@ -48,7 +48,7 @@ async def get_hotel_by_id(hotel_id: int):
     summary="Создать новый отель",
     description="<h1>Создать новый отель с его названием и городом</h1>",
 )
-async def create_hotel(hotel_data: Hotel = Body(openapi_examples={
+async def create_hotel(hotel_data: HotelAdd = Body(openapi_examples={
     "1": {
         "summary": "Пример создания нового отеля",
         "value": {

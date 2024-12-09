@@ -5,6 +5,7 @@ from fastapi.exceptions import HTTPException
 
 class BaseRepository:
     model = None
+    schema: BaseModel = None
     
     def __init__(self, session):
         self.session = session
@@ -12,12 +13,18 @@ class BaseRepository:
     async def get_all(self):
         query = select(self.model)
         result = await self.session.execute(query)
-        return result.scalars().all()
+        return [self.schema.model_validate(
+            object, 
+            from_attributes=True
+        ) for object in result.scalars().all()]
     
-    async def get_object_by_id(self, id):
-        stmt = select(self.model).where(self.model.id == id)
+    async def get_one_or_none(self, **filter_by):
+        stmt = select(self.model).filter_by(**filter_by)
         result = await self.session.execute(stmt)
-        return result.scalars().one()
+        item = result.scalars().one_or_none()
+        if item is None:
+            raise HTTPException(status_code=404, detail="Объект не найден")
+        return self.schema.model_validate(item, from_attributes=True)
     
     async def add(self, data_object: BaseModel):
         add_model_stmt = insert(self.model).values(**data_object.model_dump()).returning(self.model)
