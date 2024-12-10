@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Query
 
-from app.schemas.hotels import HotelAdd, UpdateHotel, ResponseHotel
+from app.schemas.hotels import HotelAdd, UpdateHotel, Hotel
 from app.api.dependencies import PaginationDep
 from app.database import async_session_maker
 from app.repositories.hotels import HotelsRepository
@@ -16,7 +16,7 @@ router = APIRouter(
     "", 
     summary="Получить список всех отелей",
     description="<h1>Получить список всех отелей с их id, названиями и городами</h1>",
-    response_model=list[ResponseHotel],
+    response_model=list[Hotel],
 )
 async def get_hotels(
     pagination: PaginationDep,
