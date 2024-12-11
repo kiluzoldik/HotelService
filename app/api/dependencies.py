@@ -1,8 +1,7 @@
-from datetime import date, datetime
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Query, Request
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 from app.services.auth import AuthService
 from app.database import async_session_maker
