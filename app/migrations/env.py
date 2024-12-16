@@ -11,6 +11,7 @@ from app.models.hotels import Hotels
 from app.models.rooms import Rooms
 from app.models.users import Users
 from app.models.bookings import Bookings
+from app.models.facilities import Facilities
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
