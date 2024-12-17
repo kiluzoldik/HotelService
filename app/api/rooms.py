@@ -2,7 +2,7 @@ from datetime import date
 from fastapi import APIRouter, Body
 
 from app.schemas.facilities import RoomFacilityAdd
-from app.schemas.rooms import Room, AddRoom, RoomPatchRequest, AddRoomRequest, RoomPatch
+from app.schemas.rooms import AddRoom, RoomPatchRequest, AddRoomRequest, RoomPatch, RoomWithRelationship
 from app.api.dependencies import DBDep
 
 
@@ -11,7 +11,6 @@ router = APIRouter(prefix="/hotels", tags=["Номера"])
 
 @router.get(
     "/{hotel_id}/rooms", 
-    response_model=list[Room],
     summary="Получение всех свободных номеров",
 )
 async def get_rooms(
@@ -19,7 +18,7 @@ async def get_rooms(
     db: DBDep,
     date_from: date,
     date_to: date,
-) -> list[Room]:
+) -> list[RoomWithRelationship]:
     return await db.rooms.get_rooms_by_date(hotel_id, date_from, date_to)
         
     
@@ -100,11 +99,10 @@ async def partial_update_room(
         id=room_id, 
         hotel_id=hotel_id
     )
-    if data.facilities_ids:
-        await db.rooms_facilities.edit(
-            facilities_ids=data.facilities_ids,
-            room_id=room_id,
-        )
+    await db.rooms_facilities.edit(
+        facilities_ids=data.facilities_ids,
+        room_id=room_id,
+    )
     await db.commit()
         
     return {"status": "OK"}

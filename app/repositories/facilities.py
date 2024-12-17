@@ -29,8 +29,8 @@ class RoomsFacilitiesRepository(BaseRepository):
         )
         await self.session.execute(delete_stmt)
         
-        dict_facilities = {item.facility_id for item in db_data}
-        to_add = set(facilities_ids) - dict_facilities
+        set_facilities = {item.facility_id for item in db_data}
+        to_add = set(facilities_ids) - set_facilities
         add_stmt = (
             insert(self.model)
             .values([{"room_id": room_id, "facility_id": _id} for _id in to_add])
