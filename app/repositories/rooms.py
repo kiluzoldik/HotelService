@@ -5,14 +5,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.models.rooms import Rooms
+from app.repositories.mappers.mappers import RoomDataMapper, RoomWithRelationshipDataMapper
 from app.repositories.utils import get_room_ids_for_booking
 from repositories.base import BaseRepository
-from app.schemas.rooms import Room, RoomWithRelationship
 
 
 class RoomsRepository(BaseRepository):
     model = Rooms
-    schema = Room
+    mapper = RoomDataMapper
     
     async def get_rooms_by_date(
         self,
@@ -27,9 +27,8 @@ class RoomsRepository(BaseRepository):
             .filter(Rooms.id.in_(rooms_ids_to_get))
         )
         result = await self.session.execute(query)
-        return [RoomWithRelationship.model_validate(
-            object, 
-            from_attributes=True
+        return [RoomWithRelationshipDataMapper.map_to_domain_entity(
+            object
         ) for object in result.scalars().all()]
         
     async def get_one_or_none(self, **filter_by):
@@ -42,4 +41,4 @@ class RoomsRepository(BaseRepository):
         item = result.scalars().one_or_none()
         if item is None:
             raise HTTPException(status_code=404, detail="Объект не найден")
-        return RoomWithRelationship.model_validate(item, from_attributes=True)
+        return RoomWithRelationshipDataMapper.map_to_domain_entity(item)
