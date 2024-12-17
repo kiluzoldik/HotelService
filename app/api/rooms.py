@@ -1,6 +1,7 @@
 from datetime import date
 from fastapi import APIRouter, Body
 
+from app.schemas.facilities import RoomFacilityAdd
 from app.schemas.rooms import Room, AddRoom, RoomPatchRequest, AddRoomRequest, RoomPatch
 from app.api.dependencies import DBDep
 
@@ -11,8 +12,7 @@ router = APIRouter(prefix="/hotels", tags=["Номера"])
 @router.get(
     "/{hotel_id}/rooms", 
     response_model=list[Room],
-    summary="Получение всех номеров",
-    description="<h1>Получение ВСЕХ номеров ВСЕХ отелей</h1>"
+    summary="Получение всех свободных номеров",
 )
 async def get_rooms(
     hotel_id: int, 
@@ -46,14 +46,22 @@ async def create_room(
             "title": "Номер 1",
             "description": "Описание номера",
             "price": 2000,
-            "quantity": 10
+            "quantity": 10,
+            "facilities_ids": [2,3]
         }
     }
 })
 ):
     _room_data = AddRoom(hotel_id=hotel_id, **data.model_dump())
     room = await db.rooms.add(_room_data)
+    rooms_facilities_data = [RoomFacilityAdd(
+        room_id=room.id, 
+        facility_id=facil_id
+    ) for facil_id in data.facilities_ids]
+    
+    await db.rooms_facilities.add_bulk(rooms_facilities_data)
     await db.commit()
+    
     return {"status": "OK", "data": room}
     
 @router.put(
@@ -63,12 +71,13 @@ async def create_room(
 )
 async def full_update_room(
     hotel_id: int, 
-    room_id: int, 
+    room_id: int,
     db: DBDep, 
-    data: AddRoomRequest
+    data: AddRoomRequest = Body()
 ):
     _room_data = AddRoom(hotel_id=hotel_id, **data.model_dump())
     await db.rooms.edit(_room_data, id=room_id)
+    await db.rooms_facilities.edit(data.facilities_ids, room_id)
     await db.commit()
     
     return {"status": "OK"}
@@ -82,7 +91,7 @@ async def partial_update_room(
     hotel_id: int, 
     room_id: int, 
     db: DBDep,
-    data: RoomPatchRequest
+    data: RoomPatchRequest = Body()
 ):
     _room_data = RoomPatch(hotel_id=hotel_id, **data.model_dump(exclude_unset=True))
     await db.rooms.edit(
@@ -91,6 +100,11 @@ async def partial_update_room(
         id=room_id, 
         hotel_id=hotel_id
     )
+    if data.facilities_ids:
+        await db.rooms_facilities.edit(
+            facilities_ids=data.facilities_ids,
+            room_id=room_id,
+        )
     await db.commit()
         
     return {"status": "OK"}

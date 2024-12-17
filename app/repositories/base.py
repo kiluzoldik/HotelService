@@ -10,7 +10,7 @@ class BaseRepository:
     def __init__(self, session):
         self.session = session
         
-    async def get_filtered(self, *filter, **filter_by):
+    async def get_filtered(self, *filter, **filter_by) -> list[BaseModel]:
         query = (
             select(self.model)
             .filter(*filter)
@@ -38,14 +38,18 @@ class BaseRepository:
         result = await self.session.execute(add_model_stmt)
         return result.scalars().one()
     
+    async def add_bulk(self, data_object: list[BaseModel]):
+        add_model_stmt = insert(self.model).values([item.model_dump() for item in data_object])
+        await self.session.execute(add_model_stmt)
+    
     async def delete(self, **filter_by):
         delete_stmt = delete(self.model).filter_by(**filter_by)
         await self.session.execute(delete_stmt)
         
     async def edit(self, object_data: BaseModel, exclude_unset: bool = False, **filter_by):
         update_stmt = (
-            update(self.model).
-            filter_by(**filter_by).
-            values(**object_data.model_dump(exclude_unset=exclude_unset))
+            update(self.model)
+            .filter_by(**filter_by)
+            .values(**object_data.model_dump(exclude_unset=exclude_unset))
         )
         await self.session.execute(update_stmt)
