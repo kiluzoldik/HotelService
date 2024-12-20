@@ -1,7 +1,8 @@
+import os
 import asyncio
 from time import sleep
+
 from PIL import Image
-import os
 
 from app.tasks.celery_app import celery_instance
 from app.utils.db_manager import DBManager

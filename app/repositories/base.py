@@ -30,7 +30,7 @@ class BaseRepository:
         item = result.scalars().one_or_none()
         if item is None:
             raise HTTPException(status_code=404, detail="Объект не найден")
-        return self.mapper.map_to_domain_entity(item, from_attributes=True)
+        return self.mapper.map_to_domain_entity(item)
     
     async def add(self, data_object: BaseModel):
         add_model_stmt = insert(self.model).values(**data_object.model_dump()).returning(self.model)
