@@ -5,7 +5,7 @@ from app.models.hotels import Hotels
 from app.models.rooms import Rooms
 from app.repositories.mappers.mappers import HotelDataMapper
 from app.repositories.utils import get_room_ids_for_booking
-from repositories.base import BaseRepository
+from app.repositories.base import BaseRepository
 
 
 class HotelsRepository(BaseRepository):
