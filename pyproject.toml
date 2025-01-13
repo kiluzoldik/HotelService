@@ -24,6 +24,8 @@ fastapi-cache2 = "^0.2.2"
 celery = "^5.4.0"
 pillow = "^11.0.0"
 aiosmtplib = "^3.0.2"
+pytest = "^8.3.4"
+pytest-dotenv = "^0.5.2"
 
 
 [build-system]
