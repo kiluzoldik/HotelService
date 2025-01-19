@@ -15,7 +15,7 @@ router = APIRouter(
     "",
     summary="Получение всех удобств",
 )
-# @cache(expire=10)
+@cache(expire=10)
 async def get_facilities(db: DBDep):
     return await db.facilities.get_all()
 
