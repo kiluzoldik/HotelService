@@ -2,6 +2,7 @@ import json
 import pytest
 from httpx import ASGITransport, AsyncClient
 
+from app.api.dependencies import get_db
 from app.database import Base, engine_null_pool
 from app.config import settings
 from app.models import *
@@ -37,11 +38,17 @@ async def register_user(setup_database, ac):
             "password": "test"
         }
     )
-        
+    
+async def get_db_null_pull():
+    async with DBManager(session_factory=async_session_maker_null_pool) as db:
+        yield db    
+            
 @pytest.fixture(scope="function")
 async def db() -> DBManager:
-    async with DBManager(session_factory=async_session_maker_null_pool) as db:
+    async for db in get_db_null_pull():
         yield db
+        
+app.dependency_overrides[get_db] = get_db_null_pull
         
 @pytest.fixture(scope="session", autouse=True)
 async def add_data_to_db(register_user):
