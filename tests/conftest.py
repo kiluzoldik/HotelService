@@ -43,8 +43,8 @@ async def register_user(setup_database, ac):
         }
     )
     
-@pytest.fixture(scope="session", autouse=True)
-async def authenticated_user(register_user, ac: AsyncClient):
+@pytest.fixture(scope="session")
+async def authenticated_client(register_user, ac: AsyncClient):
     response = await ac.post(
         "/auth/login",
         json={
