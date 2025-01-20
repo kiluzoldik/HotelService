@@ -40,6 +40,8 @@ async def get_me(
     db: DBDep
 ):
     user = await db.users.get_one_or_none(id=user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="Вы не авторизованы")
     return user
     
 @router.post("/logout")
