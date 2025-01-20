@@ -1,18 +1,16 @@
 from datetime import date
 
 from fastapi import HTTPException
-from pydantic import BaseModel
 from sqlalchemy import select
 from aiosmtplib import send
 from email.message import EmailMessage
 
 from app.models.bookings import Bookings
-from app.models.hotels import Hotels
-from app.models.rooms import Rooms
-from app.repositories.mappers.mappers import BookingDataMapper, RoomDataMapper
+from app.repositories.mappers.mappers import BookingDataMapper
 from app.repositories.base import BaseRepository
 from app.models.users import Users
 from app.repositories.utils import get_room_ids_for_booking
+from app.schemas.bookings import AddBooking
 
 
 class BookingsRepository(BaseRepository):
@@ -67,21 +65,11 @@ class BookingsRepository(BaseRepository):
             await self.send_booking_email(email_user)
             print("OK")
     
-    async def add_booking(self, data: BaseModel):
-        stmt = (
-            select(Hotels.id)
-            .select_from(Hotels)
-        )
-        result = await self.session.execute(stmt)
-        hotel_id = result.scalars().first()
+    async def add_booking(self, data: AddBooking, hotel_id: int):
         rooms_ids_for_booking = await get_room_ids_for_booking(data.date_from, data.date_to, hotel_id)
-        query = (
-            select(Rooms)
-            .filter(Rooms.id.in_(rooms_ids_for_booking))
-        )
-        res = await self.session.execute(query)
-        lst = [RoomDataMapper.map_to_domain_entity(object) for object in res.scalars().all()]
-        if data.room_id in [obj.id for obj in lst]:
+        res = await self.session.execute(rooms_ids_for_booking)
+        ids: list[int] = res.scalars().all()
+        if data.room_id in ids:
             return await self.add(data)
         else:
             raise HTTPException(status_code=409, detail="Эти номера уже забронированы")
