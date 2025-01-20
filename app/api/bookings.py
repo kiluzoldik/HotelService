@@ -1,5 +1,8 @@
 from fastapi import APIRouter, Body
+from sqlalchemy import select
 
+from app.models.hotels import Hotels
+from app.repositories.utils import get_room_ids_for_booking
 from app.schemas.bookings import AddBooking, AddBookingRequest
 from app.api.dependencies import DBDep, UserIdDep
 
@@ -50,6 +53,6 @@ async def create_booking(
         price=room_data.price,
         **data.model_dump()
     )
-    booking_data = await db.bookings.add(_booking_data)
+    booking_data = await db.bookings.add_booking(_booking_data)
     await db.commit()
     return {"status": "OK", "data": booking_data}
