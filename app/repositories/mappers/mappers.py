@@ -1,11 +1,11 @@
 from app.models.bookings import Bookings
-from app.models.facilities import Facilities
+from app.models.facilities import Facilities, RoomsFacilities
 from app.models.hotels import Hotels
 from app.models.rooms import Rooms
 from app.models.users import Users
 from app.repositories.mappers.base import DataMapper
 from app.schemas.bookings import Booking
-from app.schemas.facilities import Facility
+from app.schemas.facilities import Facility, RoomFacility
 from app.schemas.hotels import Hotel
 from app.schemas.rooms import Room, RoomWithRelationship
 from app.schemas.users import User, UserWithHashedPassword
@@ -44,3 +44,7 @@ class RoomWithRelationshipDataMapper(DataMapper):
 class UserWithHashedPasswordDataMapper(DataMapper):
     db_model = Users
     schema = UserWithHashedPassword
+    
+class RoomFacilityDataMapper(DataMapper):
+    db_model = RoomsFacilities
+    schema = RoomFacility

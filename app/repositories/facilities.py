@@ -1,9 +1,10 @@
-from sqlalchemy import delete, insert
+from sqlalchemy import delete, insert, select
+from sqlalchemy.exc import IntegrityError
 
+from app.exceptions import ViolatesFKException
 from app.models.facilities import Facilities, RoomsFacilities
 from app.repositories.base import BaseRepository
-from app.repositories.mappers.mappers import FacilityDataMapper
-from app.schemas.facilities import RoomFacility
+from app.repositories.mappers.mappers import FacilityDataMapper, RoomFacilityDataMapper
 
 
 class FacilitiesRepository(BaseRepository):
@@ -13,22 +14,28 @@ class FacilitiesRepository(BaseRepository):
 
 class RoomsFacilitiesRepository(BaseRepository):
     model = RoomsFacilities
-    schema = RoomFacility
+    mapper = RoomFacilityDataMapper
 
     async def edit(
         self,
         facilities_ids: list[int],
         room_id: int,
     ):
-        db_data = await self.get_filtered(room_id=room_id)
-        delete_stmt = delete(self.model).where(
-            self.model.room_id == room_id, self.model.facility_id.notin_(facilities_ids)
-        )
-        await self.session.execute(delete_stmt)
+        get_current_facilities_ids_query = select(self.model.facility_id).filter_by(room_id=room_id)
+        res = await self.session.execute(get_current_facilities_ids_query)
+        current_facilities_ids: list[int] = res.scalars().all()
+        ids_to_delete: list[int] = list(set(current_facilities_ids) - set(facilities_ids))
+        ids_to_insert: list[int] = list(set(facilities_ids) - set(current_facilities_ids))
 
-        set_facilities = {item.facility_id for item in db_data}
-        to_add = set(facilities_ids) - set_facilities
-        add_stmt = insert(self.model).values(
-            [{"room_id": room_id, "facility_id": _id} for _id in to_add]
-        )
-        await self.session.execute(add_stmt)
+        if ids_to_delete:
+            delete_m2m_facilities_stmt = delete(self.model).filter(
+                self.model.room_id == room_id,
+                self.model.facility_id.in_(ids_to_delete),
+            )
+            await self.session.execute(delete_m2m_facilities_stmt)
+
+        if ids_to_insert:
+            insert_m2m_facilities_stmt = insert(self.model).values(
+                [{"room_id": room_id, "facility_id": f_id} for f_id in ids_to_insert]
+            )
+            await self.session.execute(insert_m2m_facilities_stmt)

@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from app.exceptions import DatefromIsLaterThanDatetoException
 from app.models.rooms import Rooms
 from app.repositories.mappers.mappers import (
     RoomDataMapper,
@@ -23,6 +24,8 @@ class RoomsRepository(BaseRepository):
         date_from: date,
         date_to: date,
     ):
+        if date_from >= date_to:
+            raise DatefromIsLaterThanDatetoException
         rooms_ids_to_get = await get_room_ids_for_booking(date_from, date_to, hotel_id)
         query = (
             select(self.model)
@@ -44,3 +47,4 @@ class RoomsRepository(BaseRepository):
         if item is None:
             raise HTTPException(status_code=404, detail="Объект не найден")
         return RoomWithRelationshipDataMapper.map_to_domain_entity(item)
+    
