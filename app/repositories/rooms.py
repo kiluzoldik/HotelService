@@ -5,7 +5,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
 from app.models.rooms import Rooms
-from app.repositories.mappers.mappers import RoomDataMapper, RoomWithRelationshipDataMapper
+from app.repositories.mappers.mappers import (
+    RoomDataMapper,
+    RoomWithRelationshipDataMapper,
+)
 from app.repositories.utils import get_room_ids_for_booking
 from app.repositories.base import BaseRepository
 
@@ -13,7 +16,7 @@ from app.repositories.base import BaseRepository
 class RoomsRepository(BaseRepository):
     model = Rooms
     mapper = RoomDataMapper
-    
+
     async def get_rooms_by_date(
         self,
         hotel_id: int,
@@ -27,15 +30,14 @@ class RoomsRepository(BaseRepository):
             .filter(Rooms.id.in_(rooms_ids_to_get))
         )
         result = await self.session.execute(query)
-        return [RoomWithRelationshipDataMapper.map_to_domain_entity(
-            object
-        ) for object in result.scalars().all()]
-        
+        return [
+            RoomWithRelationshipDataMapper.map_to_domain_entity(object)
+            for object in result.scalars().all()
+        ]
+
     async def get_one_or_none(self, **filter_by):
         stmt = (
-            select(self.model)
-            .options(selectinload(self.model.facilities))
-            .filter_by(**filter_by)
+            select(self.model).options(selectinload(self.model.facilities)).filter_by(**filter_by)
         )
         result = await self.session.execute(stmt)
         item = result.scalars().one_or_none()

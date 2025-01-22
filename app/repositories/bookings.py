@@ -23,8 +23,8 @@ class BookingsRepository(BaseRepository):
         email["From"] = "****"
         email["To"] = user_email
         email["Subject"] = "Детали бронирования"
-        
-        message_body = f"""
+
+        message_body = """
         Здравствуйте,
 
         Ваше бронирование подтверждено.
@@ -37,40 +37,36 @@ class BookingsRepository(BaseRepository):
             "port": 587,
             "start_tls": True,
             "username": "*********",
-            "password": "********"
+            "password": "********",
         }
-        
+
         response = await send(email, **smtp_config)
         print(f"Email sent response: {response}")
-    
+
     async def get_user_booking(self, user_id: int):
-        user_stmt = (
-            select(Users.email)
-            .select_from(Users)
-            .filter(Users.id == user_id)
-        )
+        user_stmt = select(Users.email).select_from(Users).filter(Users.id == user_id)
         res = await self.session.execute(user_stmt)
         return res.scalars().one()
-    
+
     async def get_bookings_with_today_checkin(self):
-        query = (
-            select(Bookings)
-            .filter(Bookings.date_from == date.today())
-        )
+        query = select(Bookings).filter(Bookings.date_from == date.today())
         res = await self.session.execute(query)
-        lst_bookings = [self.mapper.map_to_domain_entity(booking) for booking in res.scalars().all()]
+        lst_bookings = [
+            self.mapper.map_to_domain_entity(booking) for booking in res.scalars().all()
+        ]
         for booking in lst_bookings:
             email_user = await self.get_user_booking(booking.user_id)
             print(f"{email_user=}")
             await self.send_booking_email(email_user)
             print("OK")
-    
+
     async def add_booking(self, data: AddBooking, hotel_id: int):
-        rooms_ids_for_booking = await get_room_ids_for_booking(data.date_from, data.date_to, hotel_id)
+        rooms_ids_for_booking = await get_room_ids_for_booking(
+            data.date_from, data.date_to, hotel_id
+        )
         res = await self.session.execute(rooms_ids_for_booking)
         ids: list[int] = res.scalars().all()
         if data.room_id in ids:
             return await self.add(data)
         else:
             raise HTTPException(status_code=409, detail="Эти номера уже забронированы")
-    

@@ -1,5 +1,6 @@
 import redis.asyncio as redis
 
+
 class RedisConnector:
     def __init__(self, host: str, port: int):
         self._host = host

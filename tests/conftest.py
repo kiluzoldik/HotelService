@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 import json
 from unittest import mock
 
@@ -9,7 +10,7 @@ from httpx import ASGITransport, AsyncClient
 from app.api.dependencies import get_db
 from app.database import Base, engine_null_pool
 from app.config import settings
-from app.models import *
+from app.models import * # noqa: F403
 from app.main import app
 from app.database import async_session_maker_null_pool
 from app.schemas.rooms import AddRoom
