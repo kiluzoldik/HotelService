@@ -22,8 +22,6 @@ class HotelsRepository(BaseRepository):
         limit,
         offset,
     ):
-        if date_from >= date_to:
-            raise DatefromIsLaterThanDatetoException
         rooms_ids_to_get = await get_room_ids_for_booking(date_from, date_to)
         hotels_ids = (
             select(Rooms.hotel_id).select_from(Rooms).filter(Rooms.id.in_(rooms_ids_to_get))

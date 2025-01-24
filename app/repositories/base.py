@@ -1,3 +1,4 @@
+from asyncpg import UniqueViolationError
 from pydantic import BaseModel
 from sqlalchemy import select, insert, delete, update
 from sqlalchemy.exc import NoResultFound, IntegrityError
@@ -44,8 +45,11 @@ class BaseRepository:
         add_model_stmt = insert(self.model).values(**data_object.model_dump()).returning(self.model)
         try:
             pre_result = await self.session.execute(add_model_stmt)
-        except IntegrityError:
-            raise ObjectAlreadyExistsException
+        except IntegrityError as e:
+            if isinstance(e.orig.__cause__, UniqueViolationError):
+                raise ObjectAlreadyExistsException from e
+            else:
+                raise e
         result = pre_result.scalar_one()
         return result
 
