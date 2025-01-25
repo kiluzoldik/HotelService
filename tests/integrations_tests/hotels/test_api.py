@@ -7,6 +7,6 @@ async def test_get_hotels(ac: AsyncClient):
         params={
             "date_from": "2025-01-12",
             "date_to": "2025-01-13",
-        }
+        },
     )
     assert response.status_code == 200

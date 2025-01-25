@@ -31,7 +31,7 @@ class BaseRepository:
         except NoResultFound:
             raise ObjectNotFoundException
         return self.mapper.map_to_domain_entity(item)
-    
+
     async def get_one(self, **filter_by):
         stmt = select(self.model).filter_by(**filter_by)
         result = await self.session.execute(stmt)

@@ -44,7 +44,8 @@ class RoomWithRelationshipDataMapper(DataMapper):
 class UserWithHashedPasswordDataMapper(DataMapper):
     db_model = Users
     schema = UserWithHashedPassword
-    
+
+
 class RoomFacilityDataMapper(DataMapper):
     db_model = RoomsFacilities
     schema = RoomFacility

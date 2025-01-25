@@ -1,10 +1,10 @@
 from datetime import date
 
-from fastapi import HTTPException
 from sqlalchemy import select
 from aiosmtplib import send
 from email.message import EmailMessage
 
+from app.exceptions import AllRoomsAreBookedException, BookingException
 from app.models.bookings import Bookings
 from app.repositories.mappers.mappers import BookingDataMapper
 from app.repositories.base import BaseRepository
@@ -69,4 +69,4 @@ class BookingsRepository(BaseRepository):
         if data.room_id in ids:
             return await self.add(data)
         else:
-            raise HTTPException(status_code=409, detail="Эти номера уже забронированы")
+            raise BookingException

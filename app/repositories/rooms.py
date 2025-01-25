@@ -45,4 +45,3 @@ class RoomsRepository(BaseRepository):
         if item is None:
             raise HTTPException(status_code=404, detail="Объект не найден")
         return RoomWithRelationshipDataMapper.map_to_domain_entity(item)
-    

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body
 
-from app.exceptions import AllRoomsAreBookedException, ObjectNotFoundException
-from app.schemas.bookings import AddBooking, AddBookingRequest
+from app.exceptions import AllRoomsAreBookedException, AllRoomsAreBookedHTTPException
+from app.schemas.bookings import AddBookingRequest
 from app.api.dependencies import DBDep, UserIdDep
+from app.services.bookings import BookingService
 
 
 router = APIRouter(prefix="/bookings", tags=["Бронирование"])
@@ -14,12 +15,12 @@ router = APIRouter(prefix="/bookings", tags=["Бронирование"])
     description="<h1>Получение всех бронирований (можно получить без аутентификации)</h1>",
 )
 async def get_all_bookings(db: DBDep):
-    return await db.bookings.get_all()
+    return await BookingService(db).get_all_bookings()
 
 
 @router.get("/me", summary="Получение бронирований текущего пользователя")
 async def get_my_bookings(user_id: UserIdDep, db: DBDep):
-    return await db.bookings.get_filtered(user_id=user_id)
+    return await BookingService(db).get_my_bookings(user_id=user_id)
 
 
 @router.post("")
@@ -40,17 +41,7 @@ async def create_booking(
     ),
 ):
     try:
-        room_data = await db.rooms.get_one(id=data.room_id)
-    except ObjectNotFoundException:
-        raise HTTPException(status_code=404, detail="Номер не найден")
-    
-    hotel_data = await db.hotels.get_one(id=room_data.hotel_id)
-    _booking_data = AddBooking(user_id=user_id, price=room_data.price, **data.model_dump())
-    
-    try:
-        booking_data = await db.bookings.add_booking(_booking_data, hotel_id=hotel_data.id)
-    except AllRoomsAreBookedException as e:
-        raise HTTPException(status_code=409, detail=e.detail)
-    
-    await db.commit()
+        booking_data = await BookingService(db).create_booking(user_id, data)
+    except AllRoomsAreBookedException:
+        raise AllRoomsAreBookedHTTPException
     return {"status": "OK", "data": booking_data}
