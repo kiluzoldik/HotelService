@@ -69,7 +69,7 @@ async def create_room(
                     "description": "Описание номера",
                     "price": 2000,
                     "quantity": 10,
-                    "facilities_ids": [2, 3],
+                    "facilities_ids": [],
                 },
             }
         }

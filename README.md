@@ -28,6 +28,6 @@ docker run --name booking_celery_worker `
     celery --app=app.tasks.celery_app:celery_instance worker -l INFO
 
 docker run --name booking_nginx `
-    --volume ./nginx.conf:/etc/nginx/nginx.conf `
+    --volume D:/GitHub/StusyProjectGitlab/nginx.conf:/etc/nginx/nginx.conf `
     --network=myNetwork `
     -d -p 80:80 nginx
