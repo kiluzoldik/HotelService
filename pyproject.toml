@@ -5,11 +5,11 @@ line-length = 100
 name = "studyproject"
 version = "0.1.0"
 description = ""
-authors = ["kiluzoldik <gakerchannel@gmail.com>"]
+authors = ["Artem <Gakerchannel@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 fastapi = {extras = ["all"], version = "^0.115.6"}
 uvicorn = "^0.32.1"
 python-multipart = "^0.0.19"
