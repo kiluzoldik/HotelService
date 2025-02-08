@@ -4,7 +4,6 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
-from app.exceptions import DatefromIsLaterThanDatetoException
 from app.models.rooms import Rooms
 from app.repositories.mappers.mappers import (
     RoomDataMapper,

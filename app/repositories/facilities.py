@@ -1,7 +1,5 @@
 from sqlalchemy import delete, insert, select
-from sqlalchemy.exc import IntegrityError
 
-from app.exceptions import ViolatesFKException
 from app.models.facilities import Facilities, RoomsFacilities
 from app.repositories.base import BaseRepository
 from app.repositories.mappers.mappers import FacilityDataMapper, RoomFacilityDataMapper

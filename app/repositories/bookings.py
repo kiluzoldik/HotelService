@@ -4,7 +4,7 @@ from sqlalchemy import select
 from aiosmtplib import send
 from email.message import EmailMessage
 
-from app.exceptions import AllRoomsAreBookedException, BookingException
+from app.exceptions import BookingException
 from app.models.bookings import Bookings
 from app.repositories.mappers.mappers import BookingDataMapper
 from app.repositories.base import BaseRepository

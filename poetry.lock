@@ -1271,6 +1271,17 @@ files = [
 wcwidth = "*"
 
 [[package]]
+name = "py3dns"
+version = "4.0.2"
+description = "Python 3 DNS library"
+optional = false
+python-versions = ">=3.2"
+files = [
+    {file = "py3dns-4.0.2-py3-none-any.whl", hash = "sha256:36bffe62b59a72cfa09c03f0bd3473e0126f20ee4285d14c07415dbf6f5fd571"},
+    {file = "py3dns-4.0.2.tar.gz", hash = "sha256:98652e80ecec143c60f78f0e6b341631ca9a7560edd8dddfc864c02902618a39"},
+]
+
+[[package]]
 name = "pydantic"
 version = "2.10.6"
 description = "Data validation using Python type hints"
@@ -2072,6 +2083,16 @@ docs = ["Sphinx (>=4.1.2,<4.2.0)", "sphinx-rtd-theme (>=0.5.2,<0.6.0)", "sphinxc
 test = ["aiohttp (>=3.10.5)", "flake8 (>=5.0,<6.0)", "mypy (>=0.800)", "psutil", "pyOpenSSL (>=23.0.0,<23.1.0)", "pycodestyle (>=2.9.0,<2.10.0)"]
 
 [[package]]
+name = "validate-email-address"
+version = "1"
+description = "Verify if an email address is valid and really exists."
+optional = false
+python-versions = "*"
+files = [
+    {file = "validate-email-address-1.tar.gz", hash = "sha256:9c00f978fed19d3df368b054292df7e8443761e44d3fadf95ef25499ea980f43"},
+]
+
+[[package]]
 name = "vine"
 version = "5.1.0"
 description = "Python promises."
@@ -2257,4 +2278,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3a0aba163ea3e8fa3937d966642ecb2f8e0703b8b34314e612e42e7d1987fd7c"
+content-hash = "29cb989563b02135fc19e7f4a872adcc7bc6b242a25a75da03abe4131d5b1ff2"

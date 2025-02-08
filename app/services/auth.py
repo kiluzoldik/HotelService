@@ -3,10 +3,12 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Response
 from passlib.context import CryptContext
 from sqlalchemy.exc import NoResultFound
+from validate_email_address import validate_email
 import jwt
 
 from app.config import settings
 from app.exceptions import (
+    EmailException,
     IncorrectPasswordException,
     IncorrectTokenException,
     ObjectAlreadyExistsException,
@@ -50,6 +52,9 @@ class AuthService(BaseService):
             raise IncorrectTokenException
 
     async def register_user(self, data: AddRequestUser):
+        is_valid = validate_email(data.email, verify=True)
+        if not is_valid:
+            raise EmailException
         hashed_password = AuthService().hash_password(data.password)
         new_user_data = AddUser(email=data.email, hashed_password=hashed_password)
         try:

@@ -53,8 +53,53 @@ class RoomNotFoundHTTPException(BookingHTTPException):
     detail = "Номер не найден"
 
 
-class HotelNotFoundException(BookingHTTPException):
+class HotelNotFoundException(BookingException):
     detail = "Отель не найден"
+
+
+class HotelAlreadyExistsException(BookingException):
+    detail = "Отель уже существует"
+
+
+class HotelAlreadyExistsHTTPException(BookingHTTPException):
+    status_code = 409
+    detail = "Отель уже существует"
+
+
+class HotelTitleLengthException(BookingException):
+    detail = "Название отеля должно содержать больше 3 символов"
+
+
+class HotelTitleLengthHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Название отеля должно содержать больше 3 символов"
+
+
+class HotelTitleLetterException(BookingException):
+    detail = "Название отеля должно содержать хотя бы одну букву"
+
+
+class HotelTitleLetterHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Название отеля должно содержать хотя бы одну букву"
+
+
+class HotelTitileLetterUpperException(BookingException):
+    detail = "Название отеля должно содержать хотя бы одну заглавную букву"
+
+
+class HotelTitileLetterUpperHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Название отеля должно содержать хотя бы одну заглавную букву"
+
+
+class HotelLocationLengthException(BookingException):
+    detail = "Локация отеля должна быть не менее 5 символов"
+
+
+class HotelLocationLengthHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Локация отеля должна быть не менее 5 символов"
 
 
 class RoomNotFoundException(BookingHTTPException):
@@ -108,3 +153,58 @@ class UserNotAuthenticatedHTTPException(BookingHTTPException):
 class AllRoomsAreBookedHTTPException(BookingHTTPException):
     status_code = 409
     detail = "Все номера в этом отеле такого типа уже забронированы"
+
+
+class LengthPasswordException(BookingException):
+    detail = "Пароль должен быть не менее 8 символов"
+
+
+class DigitPasswordException(BookingException):
+    detail = "Пароль должен содержать хотя бы одну цифру"
+
+
+class UpperLetterPasswordException(BookingException):
+    detail = "Пароль должен содержать хотя бы одну заглавную букву"
+
+
+class SpecialSimbolPasswordException(BookingException):
+    detail = "Пароль должен содержать хотя бы один спецсимвол"
+
+
+class LengthPasswordHTTPException(BookingHTTPException):
+    status_code = 422
+    detail = "Пароль должен быть не менее 8 символов"
+
+
+class DigitPasswordHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Пароль должен содержать хотя бы одну цифру"
+
+
+class UpperLetterPasswordHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Пароль должен содержать хотя бы одну заглавную букву"
+
+
+class SpecialSimbolPasswordHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Пароль должен содержать хотя бы один спецсимвол"
+
+
+class EmailException(BookingException):
+    detail = "Неверный формат Email"
+
+
+class EmailHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Неверный формат Email"
+
+
+class FacilityTitleDigitHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Название удобства не доллжно содержать чисел"
+
+
+class FacilityTitleZeroHTTPException(BookingHTTPException):
+    status_code = 400
+    detail = "Название удобства должно содержать более двух символов"

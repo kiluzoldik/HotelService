@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Response
 
 from app.exceptions import (
+    EmailException,
+    EmailHTTPException,
     IncorrectPasswordException,
     IncorrectPasswordOrEmailException,
     UserAlreadyExistsException,
@@ -21,6 +23,8 @@ router = APIRouter(prefix="/auth", tags=["Авторизация и аутент
 async def register_user(db: DBDep, data: AddRequestUser):
     try:
         await AuthService(db).register_user(data)
+    except EmailException:
+        raise EmailHTTPException
     except UserAlreadyExistsException as e:
         raise UserAlreadyExistsHTTPException from e
     return {"Пользователь успешно добавлен"}

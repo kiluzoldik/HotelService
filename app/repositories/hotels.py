@@ -1,7 +1,6 @@
 from datetime import date
 from sqlalchemy import func, select
 
-from app.exceptions import DatefromIsLaterThanDatetoException
 from app.models.hotels import Hotels
 from app.models.rooms import Rooms
 from app.repositories.mappers.mappers import HotelDataMapper

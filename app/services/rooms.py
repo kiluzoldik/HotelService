@@ -1,6 +1,5 @@
 from datetime import date
 from app.exceptions import (
-    HotelNotFoundException,
     ObjectNotFoundException,
     RoomNotFoundException,
     check_dates,
@@ -40,7 +39,7 @@ class RoomService(BaseService):
 
         if rooms_facilities_data:
             await self.db.rooms_facilities.add_bulk(rooms_facilities_data)
-        
+
         await self.db.commit()
         return room
 

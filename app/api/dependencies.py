@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, Query, Request
+from jwt.exceptions import ExpiredSignatureError
+from fastapi import Depends, Query, Request
 from pydantic import BaseModel
 
-from app.exceptions import TokenNotFoundException
+from app.exceptions import TokenNotFoundException, UserNotAuthenticatedHTTPException
 from app.services.auth import AuthService
 from app.database import async_session_maker
 from app.utils.db_manager import DBManager
@@ -25,7 +26,10 @@ def get_token(request: Request) -> str:
 
 
 def get_current_user_id(token: str = Depends(get_token)) -> int:
-    data = AuthService().decode_token(token)
+    try:
+        data = AuthService().decode_token(token)
+    except ExpiredSignatureError:
+        raise UserNotAuthenticatedHTTPException
     return data["user_id"]
 
 

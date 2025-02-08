@@ -2,7 +2,6 @@ from asyncpg import UniqueViolationError
 from pydantic import BaseModel
 from sqlalchemy import select, insert, delete, update
 from sqlalchemy.exc import NoResultFound, IntegrityError
-from fastapi.exceptions import HTTPException
 
 from app.exceptions import ObjectNotFoundException, ObjectAlreadyExistsException
 from app.repositories.mappers.base import DataMapper

@@ -4,8 +4,11 @@ from fastapi import APIRouter, Body, HTTPException, Query
 from fastapi_cache.decorator import cache
 
 from app.exceptions import (
+    HotelAlreadyExistsException,
     DatefromIsLaterThanDatetoException,
+    HotelAlreadyExistsHTTPException,
     HotelNotFoundException,
+    HotelNotFoundHTTPException,
     ObjectNotFoundException,
     check_dates,
 )
@@ -78,7 +81,10 @@ async def create_hotel(
         }
     ),
 ):
-    hotel = await HotelService(db).create_hotel(hotel_data)
+    try:
+        hotel = await HotelService(db).create_hotel(hotel_data)
+    except HotelAlreadyExistsException:
+        raise HotelAlreadyExistsHTTPException
     return {"message": "Отель успешно добавлен", "data": hotel}
 
 
@@ -88,7 +94,10 @@ async def create_hotel(
     description="<h1>Удалить отель по его ID</h1>",
 )
 async def delete_hotel(hotel_id: int, db: DBDep):
-    await HotelService(db).delete_hotel(hotel_id)
+    try:
+        await HotelService(db).delete_hotel(hotel_id)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
     return {"message": "Отель успешно удален"}
 
 
@@ -98,7 +107,10 @@ async def delete_hotel(hotel_id: int, db: DBDep):
     description="<h1>Изменить отель полностью по его ID с его новыми названием и городом</h1>",
 )
 async def full_update_hotel(hotel_id: int, db: DBDep, hotel_data: UpdateHotel):
-    await HotelService(db).full_update_hotel(hotel_id=hotel_id, hotel_data=hotel_data)
+    try:
+        await HotelService(db).full_update_hotel(hotel_id=hotel_id, hotel_data=hotel_data)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
     return {"message": "Отель успешно изменен"}
 
 
@@ -108,5 +120,8 @@ async def full_update_hotel(hotel_id: int, db: DBDep, hotel_data: UpdateHotel):
     description="<h1>Изменить отель частично по его ID с его новыми названием и/или городом</h1>",
 )
 async def partial_update_hotel(hotel_id: int, db: DBDep, hotel_data: UpdateHotel):
-    await HotelService(db).partial_update_hotel(hotel_id=hotel_id, hotel_data=hotel_data)
+    try:
+        await HotelService(db).partial_update_hotel(hotel_id=hotel_id, hotel_data=hotel_data)
+    except HotelNotFoundException:
+        raise HotelNotFoundHTTPException
     return {"message": "Отель изменен"}

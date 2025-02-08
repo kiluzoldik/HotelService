@@ -1,6 +1,3 @@
-git config user.name "Artem"
-git config user.email "gakerchannel@gmail.com"
-
 docker network create myNetwork
 
 docker run --name booking_db `
