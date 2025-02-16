@@ -4,10 +4,10 @@ import pytest
 @pytest.mark.parametrize(
     "email, password",
     [
-        ("test1@test1.com", "test1"),
-        ("test2@test2.com", "test2"),
-        ("test3@test3.com", "test3"),
-        ("test4@test4.com", "test4"),
+        ("example0@mail.ru", "Test_0123456789"),
+        ("example1@mail.ru", "Test_1123456789"),
+        ("example2@mail.ru", "Test_2123456789"),
+        ("example3@mail.ru", "Test_3123456789"),
     ],
 )
 @pytest.mark.order("last")
