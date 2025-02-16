@@ -11,6 +11,10 @@ build-job:
     - df -h
     - du -sh /var/lib/docker || true
     - docker system df
+    - docker system prune -a -f --volumes
+    - rm -rf /var/lib/docker/tmp/*
+    - rm -rf /cache/*
+    - rm -rf /builds/*
   script:
     - docker build --rm -t booking-api-image .
 
