@@ -8,6 +8,9 @@ build-job:
   before_script:
     - cp ${ENV} .env
     - cp ${TEST_ENV} .test.env
+    - df -h
+    - du -sh /var/lib/docker || true
+    - docker system df
   script:
     - docker build --rm -t booking-api-image .
 
