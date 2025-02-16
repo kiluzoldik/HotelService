@@ -15,3 +15,4 @@ deploy-job:
   stage: deploy
   script:
     - docker compose -f docker-compose-ci.yml up -d 
+    - docker exec booking_nginx nginx -s reload
